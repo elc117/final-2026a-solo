@@ -10,12 +10,12 @@ public class Planet {
 
     private Texture texture;
 
-    public Planet(float x, float y) {
+    public Planet(float x, float y, String textureName) {
 
         this.x = x;
         this.y = y;
 
-        texture = new Texture("planeta1.png");
+        texture = new Texture(textureName);
     }
 
     public void render(SpriteBatch batch) {

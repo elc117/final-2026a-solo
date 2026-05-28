@@ -12,33 +12,52 @@ public class Player {
     private float x;
     private float y;
 
-    private float speed = 300;
+    private int currentPlanet = 1;
 
     private float width = 200;
     private float height = 200;
 
-    public Player() {
+    private Planet[] planets;
+
+    public Player(Planet[] planets) {
+
+        this.planets = planets;
 
         texturePl = new Texture("player.png");
 
-        x = 200;
-        y = 170;
+        updatePosition();
+    }
+
+    private void updatePosition() {
+
+        x = planets[currentPlanet].x + 60;
+        y = planets[currentPlanet].y + 70;
     }
 
     public void update(float delta) {
 
-        if(Gdx.input.isKeyPressed(Input.Keys.S)) {
-            x -= speed * delta;
+        if(Gdx.input.isKeyJustPressed(Input.Keys.S)) {
+
+            if(currentPlanet > 0) {
+                currentPlanet--;
+                updatePosition();
+            }
         }
 
-        if(Gdx.input.isKeyPressed(Input.Keys.D)) {
-            x += speed * delta;
+        if(Gdx.input.isKeyJustPressed(Input.Keys.D)) {
+
+            if(currentPlanet < 2) {
+                currentPlanet++;
+                updatePosition();
+            }
         }
     }
 
     public void render(SpriteBatch batch) {
         batch.draw(texturePl, x, y, width, height);
     }
-public void dispose() {
-    texturePl.dispose();
-}}
+
+    public void dispose() {
+        texturePl.dispose();
+    }
+}

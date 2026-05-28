@@ -22,14 +22,13 @@ public class GameScreen implements Screen {
 
         batch = new SpriteBatch();
 
-        background = new Texture("bg.png");
-
-        player = new Player();
+        background = new Texture("bg.png"); 
 
         planets = new Planet[3];
-        planets[0] = new Planet(80, 150);  
-        planets[1] = new Planet(480, 150);
-        planets[2] = new Planet(880, 150);  
+        planets[0] = new Planet(80, 150, "planeta3.png");  
+        planets[1] = new Planet(480, 150, "planeta1.png");
+        planets[2] = new Planet(880, 150, "planeta2.png"); 
+        player = new Player(planets); 
     }
 
     @Override
