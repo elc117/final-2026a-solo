@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import io.github.cadu.entities.Player;
+import io.github.cadu.entities.Planet;
 
 public class GameScreen implements Screen {
 
@@ -15,6 +16,8 @@ public class GameScreen implements Screen {
 
     private Player player;
 
+    private Planet[] planets;
+
     public GameScreen() {
 
         batch = new SpriteBatch();
@@ -22,6 +25,11 @@ public class GameScreen implements Screen {
         background = new Texture("bg.png");
 
         player = new Player();
+
+        planets = new Planet[3];
+        planets[0] = new Planet(80, 150);  
+        planets[1] = new Planet(480, 150);
+        planets[2] = new Planet(880, 150);  
     }
 
     @Override
@@ -34,6 +42,10 @@ public class GameScreen implements Screen {
         batch.begin();
 
         batch.draw(background, 0, 0);
+        
+        for(Planet planet : planets) {
+            planet.render(batch);
+        }
 
         player.render(batch);
 
@@ -44,6 +56,9 @@ public class GameScreen implements Screen {
     public void dispose() {
         batch.dispose();
         background.dispose();
+        for (Planet planet : planets) {
+            planet.dispose();
+        }
         player.dispose();
     }
 

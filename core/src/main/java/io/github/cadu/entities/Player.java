@@ -14,8 +14,8 @@ public class Player {
 
     private float speed = 300;
 
-    private float width = 320;
-    private float height = 320;
+    private float width = 200;
+    private float height = 200;
 
     public Player() {
 
