@@ -49,7 +49,7 @@ public class GameScreen implements Screen {
 
         player.render(batch);
         enemy.render(batch);
-
+        enemy.basicMovement(delta);
         batch.end();
     }
 
