@@ -10,7 +10,6 @@ import com.badlogic.gdx.math.Vector2;
 public class Player {
 
     private Texture texturePl;
-
     private float x;
     private float y;
     private int currentPlanet = 1;
@@ -23,7 +22,6 @@ public class Player {
     public Player(Planet[] planets) {
 
         this.planets = planets;
-
         texturePl = new Texture("player.png");
         bullets = new Array<>();
         updatePosition();

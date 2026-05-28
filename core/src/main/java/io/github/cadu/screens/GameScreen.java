@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 import io.github.cadu.entities.Player;
 import io.github.cadu.entities.Planet;
+import io.github.cadu.entities.Enemy;
 
 public class GameScreen implements Screen {
 
@@ -15,7 +16,7 @@ public class GameScreen implements Screen {
     private Texture background;
 
     private Player player;
-
+    private Enemy enemy;
     private Planet[] planets;
 
     public GameScreen() {
@@ -29,6 +30,7 @@ public class GameScreen implements Screen {
         planets[1] = new Planet(480, 150, "planeta1.png");
         planets[2] = new Planet(880, 150, "planeta2.png"); 
         player = new Player(planets); 
+        enemy = new Enemy();
     }
 
     @Override
@@ -37,7 +39,6 @@ public class GameScreen implements Screen {
         ScreenUtils.clear(0, 0, 0, 1);
 
         player.update(delta);
-
         batch.begin();
 
         batch.draw(background, 0, 0);
@@ -47,6 +48,7 @@ public class GameScreen implements Screen {
         }
 
         player.render(batch);
+        enemy.render(batch);
 
         batch.end();
     }
@@ -59,6 +61,7 @@ public class GameScreen implements Screen {
             planet.dispose();
         }
         player.dispose();
+        enemy.dispose();
     }
 
     @Override public void show() {}
