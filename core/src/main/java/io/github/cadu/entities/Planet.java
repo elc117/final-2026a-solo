@@ -14,7 +14,6 @@ public class Planet {
 
         this.x = x;
         this.y = y;
-
         texture = new Texture(textureName);
     }
 
