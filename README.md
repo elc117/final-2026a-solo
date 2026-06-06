@@ -1,3 +1,9 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/8MfjtJ-y)
-27/05/2026 
-Repositorio criado
+Vou começar a colocar o que mudei no código aqui neste README, como um diário segundo indicação da professora.
+Comecei o trabalho no dia 27/05, onde criei o projeto vazio do LibGDX, e alterei apenas a tela do jogo para 1280x960.
+No dia 28/05 foi onde fiz as maiores mudanças e avanços até então no código, fiz 8 commits, nesse dia adicionei:
+
+Pasta entities para separar as classes, onde iniciei colocando Player, e mais importante criei a GameScreen, onde ocorre a lógica principal do jogo, adicionei umas texturas pro Player e um background, e renderizei essas sprites no GameScreen para testar. Após funcionar, meu próximo commit foi utilizar um código bem simples de movimentação WASD, apenas para testar a funcionalidade. Após testar esse código e funcionar, fui para outra parte importante do game onde eu coloquei a textura e código dos Planetas, na pratica era o código do Player, porém sem movimentação, eram apenas 3 planetas png no fundo do game. O próximo commit teve bastante atualizações, como fiz a implementação dos planetas em vetores, refatorei para que a movimentação do Player fosse da forma como eu queria, onde ele passa de um planeta a outro. No momento o player da um teletransporte usando S e D, utilizando a posição dos planetas. No próximo commit, criei a classe Bullet e implementei um tiro simples e inicial apenas para testes, porque ainda não existiam inimigos. Nos proximos dois commits trabalhei nesse inimigo para os testes, criei a classe Enemy, reutilizando o código de Player, deixando apenas a parte mais básica e coloquei uma movimentação fixa de andar de um lado ao outro. 
+
+Iniciarei a fazer mais commits brevemente e agora quero adicionar as hitboxes para colisão das balas com inimigos, para que possa testar um sistema de Dano, HP e nos futuros commits adicionar o resto do game.
+
+*Essa versão do README está muito básica e nada profissional, porém será alterada também no futuro, apenas documentando o que foi feito por enquanto.
