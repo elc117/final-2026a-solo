@@ -2,6 +2,7 @@ package io.github.cadu.entities;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 
 public class Enemy {
     private Texture textureEnemy;
@@ -12,9 +13,11 @@ public class Enemy {
     private float y = 700;
     private float movSpeed = 100;
     private boolean movingRight = true;
+    private Rectangle hitboxEnemy;
     
     public Enemy() {
         textureEnemy = new Texture("enemy.png");
+        hitboxEnemy = new Rectangle(x, y, width, height);
     }
     public void basicMovement(float delta) {
 
@@ -34,9 +37,14 @@ public class Enemy {
                 movingRight = true;
             }
         }
+        hitboxEnemy.setPosition(x, y); // atualiza a posição do hitbox para acompanhar o inimigo
     }
     public void render(SpriteBatch batch) {
         batch.draw(textureEnemy, x, y, width, height);
+    }
+
+    public Rectangle getHitboxEnemy() {
+        return hitboxEnemy;
     }
 
     public void dispose() {

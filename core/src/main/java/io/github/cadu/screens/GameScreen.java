@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 import io.github.cadu.entities.Player;
 import io.github.cadu.entities.Planet;
+import io.github.cadu.entities.Bullet;
 import io.github.cadu.entities.Enemy;
 
 public class GameScreen implements Screen {
@@ -39,6 +40,17 @@ public class GameScreen implements Screen {
         ScreenUtils.clear(0, 0, 0, 1);
 
         player.update(delta);
+        enemy.basicMovement(delta);
+
+        for (int i = player.getBullets().size - 1; i >= 0; i--) {
+            Bullet b = player.getBullets().get(i);
+            b.update(delta);
+            if (b.getHitboxBullet().overlaps(enemy.getHitboxEnemy())) { // utiliza o overlap para detectar colisão entre a bala e o inimigo
+                System.out.println("acertou inimigo"); // mensagem pra testar colisão, ta funcionando ja testei
+                player.getBullets().removeIndex(i); // destroi a bala
+            }
+        }
+
         batch.begin();
 
         batch.draw(background, 0, 0);
@@ -49,7 +61,6 @@ public class GameScreen implements Screen {
 
         player.render(batch);
         enemy.render(batch);
-        enemy.basicMovement(delta);
         batch.end();
     }
 

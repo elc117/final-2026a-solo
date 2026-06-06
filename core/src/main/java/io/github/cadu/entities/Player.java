@@ -85,4 +85,9 @@ public class Player {
     public void dispose() {
         texturePl.dispose();
     }
+    
+    public Array<Bullet> getBullets() {
+        return bullets;
+    }
 }
+

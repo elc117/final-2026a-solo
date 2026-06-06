@@ -7,3 +7,7 @@ Pasta entities para separar as classes, onde iniciei colocando Player, e mais im
 Iniciarei a fazer mais commits brevemente e agora quero adicionar as hitboxes para colisão das balas com inimigos, para que possa testar um sistema de Dano, HP e nos futuros commits adicionar o resto do game.
 
 *Essa versão do README está muito básica e nada profissional, porém será alterada também no futuro, apenas documentando o que foi feito por enquanto.
+
+06/06
+
+Primeiro commit do dia: Adicionei o math.Rectangle do libGDX para fazer as hitboxes dos inimigos e das balas, foi feita também um sistema para testar se a colisão entre bala e inimigo está funcionando na GameScreen. Eu testei e está funcionando, agora irei adicionar uma forma de derrotar o inimigo. Comecei a colocar comentários no código para melhorar a legibilidade. Vou melhorar também o que está escrito nos commits, para ficar de acordo com algo mais profissional.
