@@ -8,7 +8,7 @@ public class Enemy {
     private Texture textureEnemy;
     private float width = 200;
     private float height = 200;
-    private float hpTest = 100;
+    private float hpTest = 200;
     private float x = 640;
     private float y = 700;
     private float movSpeed = 100;
@@ -19,26 +19,23 @@ public class Enemy {
         textureEnemy = new Texture("enemy.png");
         hitboxEnemy = new Rectangle(x, y, width, height);
     }
+    
     public void basicMovement(float delta) {
-
         if (movingRight) {
-
             x += movSpeed * delta;
-
             if (x >= 1080) {
                 movingRight = false;
             }
-
         } else {
-
             x -= movSpeed * delta;
-
             if (x <= 0) {
                 movingRight = true;
             }
         }
-        hitboxEnemy.setPosition(x, y); // atualiza a posição do hitbox para acompanhar o inimigo
+        // atualiza a posição do hitbox para acompanhar o inimigo
+        hitboxEnemy.setPosition(x, y); 
     }
+    
     public void render(SpriteBatch batch) {
         batch.draw(textureEnemy, x, y, width, height);
     }
@@ -49,5 +46,17 @@ public class Enemy {
 
     public void dispose() {
         textureEnemy.dispose();
+    }
+    
+    public void takeDamage(float damage) {
+        hpTest -= damage;
+    }
+
+    public void hpStatus() {
+        System.out.println("HP do inimigo: " + hpTest);
+    }
+    
+    public boolean verifyDeath() {
+        return hpTest <= 0;
     }
 }

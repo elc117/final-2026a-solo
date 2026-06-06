@@ -13,46 +13,55 @@ import io.github.cadu.entities.Enemy;
 public class GameScreen implements Screen {
 
     private SpriteBatch batch;
-
     private Texture background;
-
     private Player player;
     private Enemy enemy;
     private Planet[] planets;
 
     public GameScreen() {
-
         batch = new SpriteBatch();
-
         background = new Texture("bg.png"); 
 
         planets = new Planet[3];
         planets[0] = new Planet(80, 150, "planeta3.png");  
         planets[1] = new Planet(480, 150, "planeta1.png");
         planets[2] = new Planet(880, 150, "planeta2.png"); 
+        
         player = new Player(planets); 
         enemy = new Enemy();
     }
 
     @Override
     public void render(float delta) {
-
         ScreenUtils.clear(0, 0, 0, 1);
 
         player.update(delta);
-        enemy.basicMovement(delta);
+        
+        // so move o inimigo se ele ainda existir
+        if (enemy != null) {
+            enemy.basicMovement(delta);
+        }
 
         for (int i = player.getBullets().size - 1; i >= 0; i--) {
             Bullet b = player.getBullets().get(i);
             b.update(delta);
-            if (b.getHitboxBullet().overlaps(enemy.getHitboxEnemy())) { // utiliza o overlap para detectar colisão entre a bala e o inimigo
-                System.out.println("acertou inimigo"); // mensagem pra testar colisão, ta funcionando ja testei
+            
+            // verifica se o inimigo ainda existe antes de tentar acessar o hitbox
+            if (enemy != null && b.getHitboxBullet().overlaps(enemy.getHitboxEnemy())) { 
+                System.out.println("acertou inimigo"); 
                 player.getBullets().removeIndex(i); // destroi a bala
+                enemy.takeDamage(50); // causa dano ao inimigo
+                enemy.hpStatus(); // mostra o HP do inimigo no console
+                
+                if (enemy.verifyDeath()) { // verifica se o inimigo morreu
+                    System.out.println("inimigo morto");
+                    enemy.dispose(); // limpa a memória de vídeo antes de anular a variável
+                    this.enemy = null; // destroi o inimigo
+                }
             }
         }
 
         batch.begin();
-
         batch.draw(background, 0, 0);
         
         for(Planet planet : planets) {
@@ -60,7 +69,11 @@ public class GameScreen implements Screen {
         }
 
         player.render(batch);
-        enemy.render(batch);
+        
+        // verfica se o inimigo ainda existe antes de tentar renderizar
+        if (enemy != null) {
+            enemy.render(batch);
+        }
         batch.end();
     }
 
@@ -72,7 +85,11 @@ public class GameScreen implements Screen {
             planet.dispose();
         }
         player.dispose();
-        enemy.dispose();
+        
+        // proteção pra caso o inimigo já tenha sido destruido durante o jogo, evitando tentar limpar algo que já foi limpo (tava crashando o jogo)
+        if (enemy != null) {
+            enemy.dispose();
+        }
     }
 
     @Override public void show() {}
