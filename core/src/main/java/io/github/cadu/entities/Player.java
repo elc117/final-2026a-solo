@@ -16,6 +16,7 @@ public class Player {
     private Array<Bullet> bullets;
     private float width = 200;
     private float height = 200;
+    private float hp = 300;
 
     private Planet[] planets;
 
@@ -82,12 +83,28 @@ public class Player {
         }
     }
 
+    public void takeDamage(float damage) {
+        hp -= damage;
+    }
+    
+    public float getHp() {
+        return hp;
+    }
+    
     public void dispose() {
         texturePl.dispose();
     }
-    
+
     public Array<Bullet> getBullets() {
         return bullets;
+    }
+    
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
     }
 }
 

@@ -37,9 +37,9 @@ public class GameScreen implements Screen {
 
         player.update(delta);
         
-        // so move o inimigo se ele ainda existir
+        // 
         if (enemy != null) {
-            enemy.basicMovement(delta);
+            enemy.update(delta, player.getX(), player.getY());
         }
 
         for (int i = player.getBullets().size - 1; i >= 0; i--) {
