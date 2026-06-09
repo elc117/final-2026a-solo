@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Player {
@@ -17,6 +18,7 @@ public class Player {
     private float width = 200;
     private float height = 200;
     private float hp = 300;
+    private Rectangle hitboxPlayer;
 
     private Planet[] planets;
 
@@ -26,6 +28,7 @@ public class Player {
         texturePl = new Texture("player.png");
         bullets = new Array<>();
         updatePosition();
+        hitboxPlayer = new Rectangle(x, y, width, height);
     }
 
     private void updatePosition() {
@@ -85,6 +88,10 @@ public class Player {
 
     public void takeDamage(float damage) {
         hp -= damage;
+    }
+
+    public Rectangle getHitboxPlayer() {
+        return hitboxPlayer;
     }
     
     public float getHp() {
