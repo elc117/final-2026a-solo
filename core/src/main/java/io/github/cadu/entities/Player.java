@@ -35,6 +35,10 @@ public class Player {
 
         x = planets[currentPlanet].x + 60;
         y = planets[currentPlanet].y + 70;
+
+        if  (hitboxPlayer != null) {
+            hitboxPlayer.setPosition(x, y);
+        }
     }
 
     public void update(float delta) {
@@ -100,6 +104,14 @@ public class Player {
     
     public void dispose() {
         texturePl.dispose();
+    }
+
+    public boolean verifyDeath() {
+        return hp <= 0;
+    }
+
+    public void hpStatus() {
+        System.out.println("HP do player: " + hp);
     }
 
     public Array<Bullet> getBullets() {

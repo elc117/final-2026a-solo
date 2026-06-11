@@ -17,3 +17,7 @@ Segundo commit do dia: Agora com as hitboxes funcionando foquei em implementar o
 08/06
 
 Primeiro commit do dia: Implementei uma versão bem básica de um menu inicial, que será muito mais importante no futuro, é onde serão feitas as compras dos upgrades para o personagem dando a vida do roguelite. O menu por enquanto so tem um background estatico e um botão de start game que altera para a screen da gameplay. Reutilizei a logica da hitbox com o rectangle e override para o botão de start.
+
+11/06
+
+Reutilizei código do MainMenu para fazer uma Game Over screen, utilizei a hitbox que tinha colocado no ultimo commit para o player tomar dano e morrer agora, se o hp chegar a 0 abre a game over screen, onde voce pode voltar para o menu principal e jogar de novo. A gameplay central está tomando forma e agora com alguns commits adicionando mais inimigos, sistema de fases e os upgrades a primeira versão chegará.

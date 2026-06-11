@@ -9,16 +9,19 @@ import io.github.cadu.entities.Player;
 import io.github.cadu.entities.Planet;
 import io.github.cadu.entities.Bullet;
 import io.github.cadu.entities.Enemy;
+import io.github.cadu.Main;
 
 public class GameScreen implements Screen {
 
+    private Main game;
     private SpriteBatch batch;
     private Texture background;
     private Player player;
     private Enemy enemy;
     private Planet[] planets;
 
-    public GameScreen() {
+    public GameScreen(Main game) {
+        this.game = game;
         batch = new SpriteBatch();
         background = new Texture("bg.png"); 
 
@@ -59,6 +62,25 @@ public class GameScreen implements Screen {
                     this.enemy = null; // destroi o inimigo
                 }
             }
+        }
+        if (enemy != null) { // verifica se o inimigo ainda existe antes de tentar acessar os tiros
+        for (int i = enemy.getBullets().size - 1; i >= 0; i--) {
+            Bullet b = enemy.getBullets().get(i);
+            b.update(delta);
+            
+            if (b.getHitboxBullet().overlaps(player.getHitboxPlayer())) { 
+                System.out.println("acertou player"); 
+                enemy.getBullets().removeIndex(i); // destroi a bala
+                player.takeDamage(60); // causa dano ao player
+                player.hpStatus(); // mostra o HP do player no console
+                if (player.verifyDeath()) { // verifica se o player morreu
+                    System.out.println("player morto");
+                    game.setScreen(new GameOverScreen(game));
+                    dispose(); // limpa a memória de vídeo antes de anular a variável
+                    return; // sai do método render para evitar tentar acessar o player depois de destruído
+                }
+            }
+        }
         }
 
         batch.begin();

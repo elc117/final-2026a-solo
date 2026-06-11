@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.ScreenUtils;
 import io.github.cadu.Main;
 
-public class MainMenuScreen implements Screen {
+public class GameOverScreen implements Screen {
 
     private Main game;
     private SpriteBatch batch;
@@ -18,13 +18,12 @@ public class MainMenuScreen implements Screen {
     private Texture buttonStartTexture;
     private Rectangle buttonStartBounds;
 
-    public MainMenuScreen(Main game) {
+    public GameOverScreen(Main game) {
         this.game = game;
         batch = new SpriteBatch();
         
-        backgroundMenu = new Texture("menu_bg.png"); 
-        buttonStartTexture = new Texture("start_game.png"); 
-        
+        backgroundMenu = new Texture("gameoverbg.png"); 
+        buttonStartTexture = new Texture("gameoverbtn.png"); 
         buttonStartBounds = new Rectangle(440, 400, 400, 160); 
     }
 
@@ -37,7 +36,7 @@ public class MainMenuScreen implements Screen {
             float mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
             
             if (buttonStartBounds.contains(mouseX, mouseY)) {
-                game.setScreen(new GameScreen(game)); // inicia o jogo se clicar no botao de start
+                game.setScreen(new MainMenuScreen(game)); // volta pra main menu
                 dispose();
                 return;
             }

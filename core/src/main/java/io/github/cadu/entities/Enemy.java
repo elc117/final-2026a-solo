@@ -91,4 +91,8 @@ public class Enemy {
     public boolean verifyDeath() {
         return hpTest <= 0;
     }
+
+        public Array<Bullet> getBullets() {
+        return bulletsEnemy;
+    }
 }
