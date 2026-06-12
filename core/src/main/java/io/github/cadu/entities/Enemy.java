@@ -26,14 +26,20 @@ public class Enemy {
     private float x;
     private float y;
     private float movSpeed = 70;
+    private int slot;
+
+    private boolean spawning = true;
+    private float spawnTimer = 0f;
+    private float spawnDuration = 0.4f;
     
     
-    public Enemy(float startX, float startY, MovementType movementType, float minBound, float maxBound) {
+    public Enemy(float startX, float startY, MovementType movementType, float minBound, float maxBound, int slot) {
         this.x = startX;
         this.y = startY;
         this.movementType = movementType;
         this.minBound = minBound;
         this.maxBound = maxBound;
+        this.slot = slot;
 
         textureEnemy = new Texture("enemy.png");
         hitboxEnemy = new Rectangle(x, y, width, height);
@@ -65,6 +71,15 @@ public class Enemy {
     }
 
     public void update(float delta, float playerX, float playerY) {
+
+        if (spawning) {
+            spawnTimer += delta;
+            if (spawnTimer >= spawnDuration) {
+                spawning = false;
+            }
+            return; 
+        }
+
         basicMovement(delta);
         timeSinceLastShot += delta; 
         
@@ -81,7 +96,17 @@ public class Enemy {
     }
     
     public void render(SpriteBatch batch) {
+        if (spawning) {
+            float alpha = spawnTimer / spawnDuration;
+            batch.setColor(1, 1, 1, alpha);
+        }
+
         batch.draw(textureEnemy, x, y, width, height);
+
+        if (spawning) {
+            batch.setColor(1, 1, 1, 1);
+        }
+
         for (Bullet b : bulletsEnemy) {
             b.render(batch);
         }
@@ -115,4 +140,18 @@ public class Enemy {
         public Array<Bullet> getBullets() {
         return bulletsEnemy;
     }
+
+    public int getSlot() {
+        return slot;
+    }
+
+    public boolean isSpawning() {
+        return spawning;
+    }
+
+    // Getters para pos e hp para fazer a render da barra de vida do inimigo
+    public float getX() { return x; }
+    public float getY() { return y; }
+    public float getHp() { return hpTest; }
+    public float getMaxHp() { return 250; } // baseado no seu hpTest inicial
 }
