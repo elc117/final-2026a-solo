@@ -9,38 +9,58 @@ import com.badlogic.gdx.math.MathUtils;
 
 public class Enemy {
     private Texture textureEnemy;
+    public enum MovementType { HORIZONTAL, VERTICAL }
     private float width = 200;
     private float height = 200;
-    private float hpTest = 200;
-    private float x = 640;
-    private float y = 700;
-    private float movSpeed = 100;
-    private boolean movingRight = true;
+    private float hpTest = 250;
+
     private Rectangle hitboxEnemy;
     private Array<Bullet> bulletsEnemy;
     private float timeSinceLastShot = 0f;
     private float currentShootInterval;
+
+    private MovementType movementType;  
+    private boolean movingPositive = true;
+    private float minBound;
+    private float maxBound;
+    private float x;
+    private float y;
+    private float movSpeed = 70;
     
-    public Enemy() {
+    
+    public Enemy(float startX, float startY, MovementType movementType, float minBound, float maxBound) {
+        this.x = startX;
+        this.y = startY;
+        this.movementType = movementType;
+        this.minBound = minBound;
+        this.maxBound = maxBound;
+
         textureEnemy = new Texture("enemy.png");
         hitboxEnemy = new Rectangle(x, y, width, height);
         bulletsEnemy = new Array<>();
-        currentShootInterval = MathUtils.random(3f, 5f); // intervalo aleatório entre 3 e 5 segundos para os tiros
+        currentShootInterval = MathUtils.random(2f, 4f); // intervalo aleatório entre 2 e 4 segundos para os tiros
     }
     
     public void basicMovement(float delta) {
-        if (movingRight) {
-            x += movSpeed * delta;
-            if (x >= 1080) {
-                movingRight = false;
+        if (movementType == MovementType.HORIZONTAL) {
+            if (movingPositive) {
+                x += movSpeed * delta;
+                if (x >= maxBound) movingPositive = false;
+            } else {
+                x -= movSpeed * delta;
+                if (x <= minBound) movingPositive = true;
             }
-        } else {
-            x -= movSpeed * delta;
-            if (x <= 0) {
-                movingRight = true;
+        } 
+        else if (movementType == MovementType.VERTICAL) {
+            if (movingPositive) {
+                y += movSpeed * delta;
+                if (y >= maxBound) movingPositive = false; 
+            } else {
+                y -= movSpeed * delta;
+                if (y <= minBound) movingPositive = true;
             }
         }
-        // atualiza a posição do hitbox para acompanhar o inimigo
+            
         hitboxEnemy.setPosition(x, y); 
     }
 
@@ -52,7 +72,7 @@ public class Enemy {
             shootAtPlayer(playerX, playerY);
             
             timeSinceLastShot = 0f;
-            currentShootInterval = MathUtils.random(3f, 5f);
+            currentShootInterval = MathUtils.random(2f, 4f);
         }
 
         for (int i = bulletsEnemy.size - 1; i >= 0; i--) {

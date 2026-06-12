@@ -21,3 +21,7 @@ Primeiro commit do dia: Implementei uma versão bem básica de um menu inicial, 
 11/06
 
 Reutilizei código do MainMenu para fazer uma Game Over screen, utilizei a hitbox que tinha colocado no ultimo commit para o player tomar dano e morrer agora, se o hp chegar a 0 abre a game over screen, onde voce pode voltar para o menu principal e jogar de novo. A gameplay central está tomando forma e agora com alguns commits adicionando mais inimigos, sistema de fases e os upgrades a primeira versão chegará.
+
+12/06
+
+Hoje vou fazer muitos commits, o primeiro do dia implementa: O jogo só tinha 1 inimigo na tela, agora coloquei o inimigo como um array, para poder renderizar mais de um ao mesmo tempo na tela como fiz com bullets, agora então ajustei a gameplay para ter 3 inimigos ao mesmo tempo, agora com esses 3 inimigos coloquei também uma nova movimentação, o inimigo da direita e da esquerda se movem horizontalmente e fiz com que o do meio va pra cima e pra baixo, coloquei algumas alterações na velocidade de disparo e intervalo de tempo para balancear mais a gameplay. Vou implementar muito mais coisas hoje e quero até o final do dia ter uma ou mais fases prontas e talvez o sistema de upgrades.
