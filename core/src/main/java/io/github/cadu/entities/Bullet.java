@@ -12,13 +12,15 @@ public class Bullet {
     private Vector2 direction;
     private float speed = 500;
     private Rectangle hitboxBullet;
+    private float damage = 50;
 
-    public Bullet(float x, float y, Vector2 direction) {
+    public Bullet(float x, float y, Vector2 direction, float damage) {
 
         texture = new Texture("bullet.png");
         hitboxBullet = new Rectangle(x, y, 32, 32);
         position = new Vector2(x, y);
         this.direction = direction;
+        this.damage = damage;
     }
 
     public void update(float delta) { // atualiza a posição da bala com base na direção e velocidade
@@ -38,5 +40,8 @@ public class Bullet {
 
     public void dispose() {
         texture.dispose();
+    }
+    public float getDamage() {
+        return damage;
     }
 }

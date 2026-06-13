@@ -1,18 +1,25 @@
 package io.github.cadu.entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.audio.Sound;
 
 public class Enemy {
-    private Texture textureEnemy;
     public enum MovementType { HORIZONTAL, VERTICAL }
-    private float width = 200;
-    private float height = 200;
-    private float hpTest = 250;
+    protected Texture textureEnemy;
+    protected float width = 200;
+    protected float height = 200;
+    protected float hp = 250;
+    protected float maxHp = 250;
+    protected float movSpeed = 70;
+    protected float damage = 60;
+    protected float x;
+    protected float y;
 
     private Rectangle hitboxEnemy;
     private Array<Bullet> bulletsEnemy;
@@ -23,14 +30,13 @@ public class Enemy {
     private boolean movingPositive = true;
     private float minBound;
     private float maxBound;
-    private float x;
-    private float y;
-    private float movSpeed = 70;
     private int slot;
 
     private boolean spawning = true;
     private float spawnTimer = 0f;
     private float spawnDuration = 0.4f;
+    private Sound enemyShootSound;
+    private Sound enemyHitSound;
     
     
     public Enemy(float startX, float startY, MovementType movementType, float minBound, float maxBound, int slot) {
@@ -45,6 +51,9 @@ public class Enemy {
         hitboxEnemy = new Rectangle(x, y, width, height);
         bulletsEnemy = new Array<>();
         currentShootInterval = MathUtils.random(2f, 4f); // intervalo aleatório entre 2 e 4 segundos para os tiros
+
+        enemyShootSound = Gdx.audio.newSound(Gdx.files.internal("enemy_shoot.wav"));
+        enemyHitSound = Gdx.audio.newSound(Gdx.files.internal("enemy_hit.wav"));
     }
     
     public void basicMovement(float delta) {
@@ -118,23 +127,27 @@ public class Enemy {
 
     public void dispose() {
         textureEnemy.dispose();
+        enemyShootSound.dispose();
+        enemyHitSound.dispose();
     }
     
     public void takeDamage(float damage) {
-        hpTest -= damage;
+        hp -= damage;
+        enemyHitSound.play(0.5f);
     }
 
     public void hpStatus() {
-        System.out.println("HP do inimigo: " + hpTest);
+        System.out.println("HP do inimigo: " + hp);
     }
 
-    public void shootAtPlayer(float playerX, float playerY) {
+    protected void shootAtPlayer(float playerX, float playerY) {
         Vector2 direction = new Vector2(playerX - (x + width / 2), playerY - (y + height / 2)).nor();
-        bulletsEnemy.add(new Bullet(x + width / 2, y + height / 2, direction));
+        enemyShootSound.play(0.5f);
+        bulletsEnemy.add(new Bullet(x + width / 2, y + height / 2, direction, damage));
     }
     
     public boolean verifyDeath() {
-        return hpTest <= 0;
+        return hp <= 0;
     }
 
         public Array<Bullet> getBullets() {
@@ -152,6 +165,6 @@ public class Enemy {
     // Getters para pos e hp para fazer a render da barra de vida do inimigo
     public float getX() { return x; }
     public float getY() { return y; }
-    public float getHp() { return hpTest; }
-    public float getMaxHp() { return 250; } // baseado no seu hpTest inicial
+    public float getHp() { return hp; }
+    public float getMaxHp() { return maxHp; } // baseado no seu hp inicial
 }

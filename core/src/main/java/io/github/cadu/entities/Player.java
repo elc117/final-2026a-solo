@@ -23,6 +23,8 @@ public class Player {
     private float rotation = 0f;
     private Sound shootSound;
     private Sound PlayerHitSound;
+    private float baseDamage = 50f;
+    private float fireRate = 1.0f;
 
     private Planet[] planets;
 
@@ -77,11 +79,7 @@ public class Player {
         rotation = aimDirection.angleDeg() - 90f;
         if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             shootSound.play(0.5f);
-            bullets.add(new Bullet(
-                playerPos.x,
-                playerPos.y,
-                new Vector2(aimDirection) 
-            ));
+            bullets.add(new Bullet(playerPos.x,playerPos.y,new Vector2(aimDirection),baseDamage));
         }
         
         for(Bullet bullet : bullets) {
