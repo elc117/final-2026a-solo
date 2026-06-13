@@ -30,4 +30,6 @@ Segundo commit: Adicionei muitas coisas, porém a principal é que agora o siste
 
 13/06
 
-Primeiro commit: Usei a IA pra ajudar com alguns elementos de animação, Gemini me ajudou a fazer a parte da nave do player rotacionar virada para o mouse sempre, envolvia uma matemática que eu não entendi direito, por isso fui atrás da ajuda da IA, como é algo puramente pra visual e não muda a lógica do jogo, acho justo o uso da IA. Adicionei também sound effects para tiros, hits e morte. Percebi que meu projeto não estava com a opção de html que precisava pra funcionar no itch.io, então arrumei criando um novo projeto e trazendo os códigos pra cá. Agora consigo criar a build html. 
+Primeiro commit: Usei a IA pra ajudar com alguns elementos de animação, Gemini me ajudou a fazer a parte da nave do player rotacionar virada para o mouse sempre, envolvia uma matemática que eu não entendi direito, por isso fui atrás da ajuda da IA, como é algo puramente pra visual e não muda a lógica do jogo, acho justo o uso da IA. Adicionei também sound effects para tiros, hits e morte. Percebi que meu projeto não estava com a opção de html que precisava pra funcionar no itch.io, então arrumei criando um novo projeto e trazendo os códigos pra cá. Agora consigo criar a build html.
+Segundo commit: Apenas algumas alterações no código para que funcione com tela cheia sem esticar o jogo, antes não dava pra jogar em tela cheia pois o jogo é 1280x960.
+ 

@@ -47,7 +47,7 @@ public class Player {
         }
     }
 
-    public void update(float delta) {
+    public void update(float delta, float mouseX, float mouseY) {
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.S)) {
 
@@ -65,11 +65,7 @@ public class Player {
             }
         }
         
-        // agora calcula a direção todo frame
-        Vector2 mousePos = new Vector2(
-            Gdx.input.getX(),
-            Gdx.graphics.getHeight() - Gdx.input.getY()
-        );
+        Vector2 mousePos = new Vector2(mouseX, mouseY);
 
         Vector2 playerPos = new Vector2(
             x + width / 2,
@@ -126,6 +122,8 @@ public class Player {
     
     public void dispose() {
         texturePl.dispose();
+        shootSound.dispose();
+        PlayerHitSound.dispose();
     }
 
     public boolean verifyDeath() {

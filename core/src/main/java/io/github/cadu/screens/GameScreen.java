@@ -10,6 +10,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.math.Vector3;
 
 import io.github.cadu.entities.Player;
 import io.github.cadu.entities.Planet;
@@ -34,6 +38,8 @@ public class GameScreen implements Screen {
     private ShapeRenderer shapeRenderer;
     private Sound enemyDeathSound;
     private Sound enemyHitSound;
+    private OrthographicCamera camera;
+    private Viewport viewport;
 
 
     public GameScreen(Main game) {
@@ -46,6 +52,9 @@ public class GameScreen implements Screen {
         planets[0] = new Planet(80, 150, "planeta3.png");  
         planets[1] = new Planet(480, 150, "planeta1.png");
         planets[2] = new Planet(880, 150, "planeta2.png"); 
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(1280, 960, camera);
+
         
         player = new Player(planets); 
         enemies = new Array<>();
@@ -69,6 +78,7 @@ public class GameScreen implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0, 1);
+        Vector3 mouseMundo = viewport.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
         // usa o novo sistema de slots para respawnar inimigos, garantindo que só tenha 1 inimigo por vaga e um máximo de inimigos na tela
         if (enemies.size < maxEnemiesOnScreen && enemiesSpawnedThisPhase < enemiesToKillThisPhase) {
             if (!slotOccupied[0]) {
@@ -80,7 +90,7 @@ public class GameScreen implements Screen {
             }
         }
 
-        player.update(delta);
+        player.update(delta, mouseMundo.x, mouseMundo.y);
         
         for (Enemy e : enemies) {
             e.update(delta, player.getX(), player.getY());
@@ -131,6 +141,8 @@ public class GameScreen implements Screen {
             }
         }
         }
+        batch.setProjectionMatrix(camera.combined);
+        shapeRenderer.setProjectionMatrix(camera.combined);
 
         batch.begin();
         batch.draw(background, 0, 0);
@@ -184,7 +196,9 @@ public class GameScreen implements Screen {
     }
 
     @Override public void show() {}
-    @Override public void resize(int width, int height) {}
+    @Override public void resize(int width, int height) {
+        viewport.update(width, height, true);
+    }
     @Override public void pause() {}
     @Override public void resume() {}
     @Override public void hide() {}
