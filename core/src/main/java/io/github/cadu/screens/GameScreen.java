@@ -1,5 +1,6 @@
 package io.github.cadu.screens;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -8,6 +9,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.audio.Sound;
 
 import io.github.cadu.entities.Player;
 import io.github.cadu.entities.Planet;
@@ -30,13 +32,16 @@ public class GameScreen implements Screen {
     private int enemiesToKillThisPhase = 10;
     private BitmapFont font;
     private ShapeRenderer shapeRenderer;
+    private Sound enemyDeathSound;
+    private Sound enemyHitSound;
 
 
     public GameScreen(Main game) {
         this.game = game;
         batch = new SpriteBatch();
         background = new Texture("bg.png"); 
-
+        enemyDeathSound = Gdx.audio.newSound(Gdx.files.internal("enemy_death.wav"));
+        enemyHitSound = Gdx.audio.newSound(Gdx.files.internal("enemy_hit.wav"));
         planets = new Planet[3];
         planets[0] = new Planet(80, 150, "planeta3.png");  
         planets[1] = new Planet(480, 150, "planeta1.png");
@@ -93,12 +98,14 @@ public class GameScreen implements Screen {
                     player.getBullets().removeIndex(i); // destroi a bala
                     e.takeDamage(50); // causa dano ao inimigo
                     e.hpStatus(); // mostra o HP do inimigo no console
+                    enemyHitSound.play(0.5f); // toca o som de hit do inimigo
                     
                     if (e.verifyDeath()) { // verifica se o inimigo morreu
                         System.out.println("inimigo morto");
                         e.dispose(); // limpa a memória de vídeo antes de anular a variável
                         enemies.removeIndex(j); // destroi o inimigo
                         enemiesKilled++;
+                        enemyDeathSound.play(0.5f); // toca o som de morte do inimigo
                         slotOccupied[e.getSlot()] = false; // libera a vaga do inimigo morto pra spawnar denovo
                     }
                     break;

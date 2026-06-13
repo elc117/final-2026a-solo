@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.audio.Sound;
 
 public class Player {
 
@@ -19,6 +20,9 @@ public class Player {
     private float height = 200;
     private float hp = 300;
     private Rectangle hitboxPlayer;
+    private float rotation = 0f;
+    private Sound shootSound;
+    private Sound PlayerHitSound;
 
     private Planet[] planets;
 
@@ -29,6 +33,8 @@ public class Player {
         bullets = new Array<>();
         updatePosition();
         hitboxPlayer = new Rectangle(x, y, width, height);
+        shootSound = Gdx.audio.newSound(Gdx.files.internal("shoot.wav"));
+        PlayerHitSound = Gdx.audio.newSound(Gdx.files.internal("hit.wav"));
     }
 
     private void updatePosition() {
@@ -58,33 +64,48 @@ public class Player {
                 updatePosition();
             }
         }
+        
+        // agora calcula a direção todo frame
+        Vector2 mousePos = new Vector2(
+            Gdx.input.getX(),
+            Gdx.graphics.getHeight() - Gdx.input.getY()
+        );
+
+        Vector2 playerPos = new Vector2(
+            x + width / 2,
+            y + height / 2
+        );
+
+        Vector2 aimDirection = mousePos.sub(playerPos).nor();
+        
+        rotation = aimDirection.angleDeg() - 90f;
         if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-
-            Vector2 mousePos = new Vector2(
-                Gdx.input.getX(),
-                Gdx.graphics.getHeight() - Gdx.input.getY()
-            );
-
-            Vector2 playerPos = new Vector2(
-                x + width / 2,
-                y + height / 2
-            );
-
-        Vector2 direction = mousePos.sub(playerPos).nor();
-
+            shootSound.play(0.5f);
             bullets.add(new Bullet(
-            playerPos.x,
-            playerPos.y,
-            direction
-        ));
+                playerPos.x,
+                playerPos.y,
+                new Vector2(aimDirection) 
+            ));
         }
-            for(Bullet bullet : bullets) {
-                bullet.update(delta);
-            } 
+        
+        for(Bullet bullet : bullets) {
+            bullet.update(delta);
+        } 
     }
 
-    public void render(SpriteBatch batch) {
-        batch.draw(texturePl, x, y, width, height);
+    public void render(SpriteBatch batch) { // desenha agora pra fazer a nave seguir o mouse (usei IA para ajudar)
+        batch.draw(
+            texturePl, 
+            x, y, 
+            width / 2, height / 2,
+            width, height, 
+            1f, 1f,             
+            rotation,   
+            0, 0, 
+            texturePl.getWidth(), texturePl.getHeight(), 
+            false, false  
+        );
+        
         for(Bullet bullet : bullets) {
             bullet.render(batch);
         }
@@ -92,6 +113,7 @@ public class Player {
 
     public void takeDamage(float damage) {
         hp -= damage;
+        PlayerHitSound.play(0.5f);
     }
 
     public Rectangle getHitboxPlayer() {
@@ -126,4 +148,3 @@ public class Player {
         return y;
     }
 }
-
