@@ -77,9 +77,15 @@ public class Player {
         Vector2 aimDirection = mousePos.sub(playerPos).nor();
         
         rotation = aimDirection.angleDeg() - 90f;
+
         if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             shootSound.play(0.5f);
-            bullets.add(new Bullet(playerPos.x,playerPos.y,new Vector2(aimDirection),baseDamage));
+            
+            float offset = height / 2; 
+            float spawnX = playerPos.x + (aimDirection.x * offset);
+            float spawnY = playerPos.y + (aimDirection.y * offset);
+            
+            bullets.add(new Bullet(spawnX, spawnY, new Vector2(aimDirection), baseDamage));
         }
         
         for(Bullet bullet : bullets) {

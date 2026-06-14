@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.audio.Sound;
+import io.github.cadu.screens.GameScreen;
 
 public class Enemy {
     public enum MovementType { HORIZONTAL, VERTICAL }
@@ -17,29 +18,31 @@ public class Enemy {
     protected float hp = 250;
     protected float maxHp = 250;
     protected float movSpeed = 70;
-    protected float damage = 60;
+    protected float damage = 50;
     protected float x;
     protected float y;
+    protected float timeSinceLastShot = 0f;
+    protected float minShootInterval = 2f;
+    protected float maxShootInterval = 4f;
+    protected Sound enemyShootSound;
+    protected Sound enemyHitSound;
 
     private Rectangle hitboxEnemy;
     private Array<Bullet> bulletsEnemy;
-    private float timeSinceLastShot = 0f;
-    private float currentShootInterval;
-
     private MovementType movementType;  
     private boolean movingPositive = true;
     private float minBound;
     private float maxBound;
     private int slot;
+    private float currentShootInterval;
 
     private boolean spawning = true;
     private float spawnTimer = 0f;
     private float spawnDuration = 0.4f;
-    private Sound enemyShootSound;
-    private Sound enemyHitSound;
+
     
     
-    public Enemy(float startX, float startY, MovementType movementType, float minBound, float maxBound, int slot) {
+    public Enemy(float startX, float startY, MovementType movementType, float minBound, float maxBound, int slot, int currentPhase) {
         this.x = startX;
         this.y = startY;
         this.movementType = movementType;
@@ -47,10 +50,20 @@ public class Enemy {
         this.maxBound = maxBound;
         this.slot = slot;
 
+        this.hp = 250;
+        this.maxHp = 250;
+        this.movSpeed = 70;
+        this.damage = 50;
+        if (currentPhase > 1) {
+            this.hp = (currentPhase * 0.5f) * hp; // aumenta o hp do inimigo a cada fase
+            this.damage = damage * (currentPhase * 0.66f); // aumenta o dano do inimigo a cada fase
+            this.maxHp = hp; // atualiza o maxHp para a nova quantidade de hp   
+        }
+
         textureEnemy = new Texture("enemy.png");
         hitboxEnemy = new Rectangle(x, y, width, height);
         bulletsEnemy = new Array<>();
-        currentShootInterval = MathUtils.random(2f, 4f); // intervalo aleatório entre 2 e 4 segundos para os tiros
+        currentShootInterval = MathUtils.random(minShootInterval, maxShootInterval); // intervalo aleatório entre 2 e 4 segundos para os tiros
 
         enemyShootSound = Gdx.audio.newSound(Gdx.files.internal("enemy_shoot.wav"));
         enemyHitSound = Gdx.audio.newSound(Gdx.files.internal("enemy_hit.wav"));
@@ -96,7 +109,7 @@ public class Enemy {
             shootAtPlayer(playerX, playerY);
             
             timeSinceLastShot = 0f;
-            currentShootInterval = MathUtils.random(2f, 4f);
+            currentShootInterval = MathUtils.random(minShootInterval, maxShootInterval);
         }
 
         for (int i = bulletsEnemy.size - 1; i >= 0; i--) {
@@ -141,9 +154,16 @@ public class Enemy {
     }
 
     protected void shootAtPlayer(float playerX, float playerY) {
-        Vector2 direction = new Vector2(playerX - (x + width / 2), playerY - (y + height / 2)).nor();
+        float centerX = x + width / 2;
+        float centerY = y + height / 2;
+        Vector2 direction = new Vector2(playerX - centerX, playerY - centerY).nor();
+
+        float offset = height / 2; 
+        float spawnX = centerX + (direction.x * offset);
+        float spawnY = centerY + (direction.y * offset);
+        
         enemyShootSound.play(0.5f);
-        bulletsEnemy.add(new Bullet(x + width / 2, y + height / 2, direction, damage));
+        bulletsEnemy.add(new Bullet(spawnX, spawnY, direction, damage));
     }
     
     public boolean verifyDeath() {

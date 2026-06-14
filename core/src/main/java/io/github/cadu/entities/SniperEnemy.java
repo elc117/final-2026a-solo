@@ -4,21 +4,36 @@ import com.badlogic.gdx.graphics.Texture;
 
 public class SniperEnemy extends Enemy {
 
-    public SniperEnemy(float startX, float startY, MovementType movementType, float minBound, float maxBound, int slot) {
-        super(startX, startY, movementType, minBound, maxBound, slot);
+    public SniperEnemy(float startX, float startY, MovementType movementType, float minBound, float maxBound, int slot, int currentPhase) {
+        super(startX, startY, movementType, minBound, maxBound, slot, currentPhase); 
 
-        textureEnemy.dispose(); // descarta a textura do inimigo normal
-        textureEnemy = new Texture("sniper_enemy.png"); // carrega a textura do sniper
+        textureEnemy.dispose(); 
+        textureEnemy = new Texture("sniper_enemy.png"); 
 
-        this.hp = 150; // tem menos hp que o inimigo normal
-        this.damage = 120; // dobro de dano do inimigo normal
-        this.movSpeed = 50; // velocidade intermediária entre o inimigo normal e o tanque
+        this.width = 150;
+        this.height = 225;
+        getHitboxEnemy().setSize(width, height); 
+
+        this.minShootInterval = 3f;
+        this.maxShootInterval = 5f; 
+
+        this.hp = 150; 
+        this.damage = 100; 
+        this.movSpeed = 50; 
         this.maxHp = 150;
     }
 
     @Override
     public void shootAtPlayer(float playerX, float playerY) {
-        Vector2 direction = new Vector2(playerX - (x + width / 2), playerY - (y + height / 2)).nor();
-        getBullets().add(new Bullet(x + width / 2, y + height / 2, direction, damage));
+        float centerX = x + width / 2;
+        float centerY = y + height / 2;
+        Vector2 direction = new Vector2(playerX - centerX, playerY - centerY).nor();
+        
+        float offset = height / 2; 
+        float spawnX = centerX + (direction.x * offset);
+        float spawnY = centerY + (direction.y * offset);
+        
+        enemyShootSound.play(0.5f); // <--- ADICIONE ESTA LINHA AQUI!
+        getBullets().add(new Bullet(spawnX, spawnY, direction, damage));
     }
 }

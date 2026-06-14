@@ -5,20 +5,36 @@ import com.badlogic.gdx.math.Vector2;
 
 public class TankEnemy extends Enemy {
 
-    public TankEnemy(float startX, float startY, MovementType movementType, float minBound, float maxBound, int slot) {
-        super(startX, startY, movementType, minBound, maxBound, slot);
+    public TankEnemy(float startX, float startY, MovementType movementType, float minBound, float maxBound, int slot, int currentPhase) {
+        super(startX, startY, movementType, minBound, maxBound, slot, currentPhase); 
 
-        textureEnemy.dispose(); // descarta a textura do inimigo normal
-        textureEnemy = new Texture("tank_enemy.png"); // carrega a textura do tanque
-        
+        textureEnemy.dispose(); 
+        textureEnemy = new Texture("tank_enemy.png"); 
+
+        this.width = 180; 
+        this.height = 270;
+        getHitboxEnemy().setSize(width, height); 
+
+        this.minShootInterval = 1.5f;
+        this.maxShootInterval = 3f; 
+
         this.hp = 800;
         this.maxHp = 800;
         this.movSpeed = 30;
-        this.damage = 30;
+        this.damage = 20;
     }
+    
     @Override
     public void shootAtPlayer(float playerX, float playerY) {
-        Vector2 direction = new Vector2(playerX - (x + width / 2), playerY - (y + height / 2)).nor();
-        getBullets().add(new Bullet(x + width / 2, y + height / 2, direction, damage));
+        float centerX = x + width / 2;
+        float centerY = y + height / 2;
+        Vector2 direction = new Vector2(playerX - centerX, playerY - centerY).nor();
+        
+        float offset = height / 2; 
+        float spawnX = centerX + (direction.x * offset);
+        float spawnY = centerY + (direction.y * offset);
+        
+        enemyShootSound.play(0.5f); // <--- ADICIONE ESTA LINHA AQUI!
+        getBullets().add(new Bullet(spawnX, spawnY, direction, damage));
     }
 }

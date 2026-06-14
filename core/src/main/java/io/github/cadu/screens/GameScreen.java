@@ -19,41 +19,50 @@ import io.github.cadu.entities.Player;
 import io.github.cadu.entities.Planet;
 import io.github.cadu.entities.Bullet;
 import io.github.cadu.entities.Enemy;
+import io.github.cadu.entities.TankEnemy;
+import io.github.cadu.entities.SniperEnemy;
 import io.github.cadu.Main;
 
 public class GameScreen implements Screen {
 
+    // entidades e variáveis de controle
     private Main game;
     private SpriteBatch batch;
     private Texture background;
     private Player player;
     private Array<Enemy> enemies;
     private Planet[] planets;
+    
+    // spawn e fases
     private boolean[] slotOccupied = new boolean[3];
+    private int[] slotSpawnCount = new int[3]; // conta quantos inimigos já nasceram em cada slot para alternar entre normal e especial
     private int enemiesSpawnedThisPhase = 0;
     private int enemiesKilled = 0;
     private int maxEnemiesOnScreen = 3;
-    private int enemiesToKillThisPhase = 10;
+    private int enemiesToKillThisPhase = 8;
+    private int currentPhase = 1; // controla a fase, começa no 1
+
+    // hud
     private BitmapFont font;
     private ShapeRenderer shapeRenderer;
     private Sound enemyDeathSound;
     private OrthographicCamera camera;
     private Viewport viewport;
 
-
     public GameScreen(Main game) {
         this.game = game;
         batch = new SpriteBatch();
         background = new Texture("bg.png"); 
         enemyDeathSound = Gdx.audio.newSound(Gdx.files.internal("enemy_death.wav"));
+        
         planets = new Planet[3];
         planets[0] = new Planet(80, 150, "planeta3.png");  
         planets[1] = new Planet(480, 150, "planeta1.png");
         planets[2] = new Planet(880, 150, "planeta2.png"); 
+        
         camera = new OrthographicCamera();
         viewport = new FitViewport(1280, 960, camera);
 
-        
         player = new Player(planets); 
         enemies = new Array<>();
         font = new BitmapFont();
@@ -62,38 +71,73 @@ public class GameScreen implements Screen {
     }
 
     private void spawnEnemy(int slotIndex) {
-        if (slotIndex == 0) { // vaga da esquerda
-            enemies.add(new Enemy(10, 600, Enemy.MovementType.HORIZONTAL, 10, 320,0));
-        } else if (slotIndex == 1) { // vaga do meio
-            enemies.add(new Enemy(540, 600, Enemy.MovementType.VERTICAL, 450, 770,1));
-        } else if (slotIndex == 2) { // vaga da direita
-            enemies.add(new Enemy(1070, 600, Enemy.MovementType.HORIZONTAL, 760, 1070,2));
+        Enemy newEnemy = null;
+
+        if (currentPhase == 1) {
+            // fase 1, só inimigos normais
+            if (slotIndex == 0) newEnemy = new Enemy(10, 600, Enemy.MovementType.HORIZONTAL, 10, 320, 0, currentPhase);
+            else if (slotIndex == 1) newEnemy = new Enemy(540, 600, Enemy.MovementType.VERTICAL, 450, 770, 1, currentPhase);
+            else if (slotIndex == 2) newEnemy = new Enemy(1070, 600, Enemy.MovementType.HORIZONTAL, 760, 1070, 2, currentPhase);
+        } else {
+
+            // fase 2 em diante alterna entre inimigo normal e especial a cada spawn
+            // se o spawn for par, nasce inimigo normal; se for ímpar, nasce inimigo especial (tanque ou sniper)
+            boolean isSpecialSpawn = (slotSpawnCount[slotIndex] % 2 != 0); 
+
+            if (!isSpecialSpawn) {
+                // nasce inimigo normal
+                if (slotIndex == 0) newEnemy = new Enemy(10, 600, Enemy.MovementType.HORIZONTAL, 10, 320, 0, currentPhase);
+                else if (slotIndex == 1) newEnemy = new Enemy(540, 600, Enemy.MovementType.VERTICAL, 450, 770, 1, currentPhase);
+                else if (slotIndex == 2) newEnemy = new Enemy(1070, 600, Enemy.MovementType.HORIZONTAL, 760, 1070, 2, currentPhase);
+            } else {
+                // nasce inimigo especial (tanque ou sniper)
+                if (slotIndex == 0) newEnemy = new TankEnemy(10, 600, Enemy.MovementType.HORIZONTAL, 10, 320, 0, currentPhase);
+                else if (slotIndex == 1) newEnemy = new SniperEnemy(540, 600, Enemy.MovementType.VERTICAL, 450, 770, 1, currentPhase);
+                else if (slotIndex == 2) newEnemy = new TankEnemy(1070, 600, Enemy.MovementType.HORIZONTAL, 760, 1070, 2, currentPhase);
+            }
         }
+
+        enemies.add(newEnemy);
         slotOccupied[slotIndex] = true;
+        slotSpawnCount[slotIndex]++; // Aumenta a contagem de nascimentos dessa vaga
         enemiesSpawnedThisPhase++;
+    }
+
+    private void advancePhase() {
+        currentPhase++;
+        enemiesKilled = 0;
+        enemiesSpawnedThisPhase = 0;
+        enemiesToKillThisPhase += 2; // aumenta a quantidade de inimigos a matar a cada fase para aumentar a dificuldade
+        
+        // zera o contador de spawn para cada slot para garantir que o padrão de inimigos se mantenha a cada fase
+        for(int i = 0; i < 3; i++) {
+            slotSpawnCount[i] = 0;
+        }
+        System.out.println("passou pra fase " + currentPhase);
+    }
+
+    public int sendPhase() {
+        return currentPhase;
     }
 
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0, 1);
         Vector3 mouseMundo = viewport.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-        // usa o novo sistema de slots para respawnar inimigos, garantindo que só tenha 1 inimigo por vaga e um máximo de inimigos na tela
+        
         if (enemies.size < maxEnemiesOnScreen && enemiesSpawnedThisPhase < enemiesToKillThisPhase) {
-            if (!slotOccupied[0]) {
-                spawnEnemy(0);
-            } else if (!slotOccupied[1]) {
-                spawnEnemy(1);
-            } else if (!slotOccupied[2]) {
-                spawnEnemy(2);
-            }
+            if (!slotOccupied[0]) spawnEnemy(0);
+            else if (!slotOccupied[1]) spawnEnemy(1);
+            else if (!slotOccupied[2]) spawnEnemy(2);
         }
 
         player.update(delta, mouseMundo.x, mouseMundo.y);
         
         for (Enemy e : enemies) {
-            e.update(delta, player.getX(), player.getY());
+            e.update(delta, player.getX() + 100, player.getY() + 100);
         }
 
+        // colisão dos inimigos
         for (int i = player.getBullets().size - 1; i >= 0; i--) {
             Bullet b = player.getBullets().get(i);
             b.update(delta);
@@ -102,41 +146,47 @@ public class GameScreen implements Screen {
                 Enemy e = enemies.get(j);
 
                 if (!e.isSpawning() && b.getHitboxBullet().overlaps(e.getHitboxEnemy())) { 
-                    System.out.println("acertou inimigo"); 
-                    player.getBullets().removeIndex(i); // destroi a bala
-                    e.takeDamage(50); // causa dano ao inimigo
-                    e.hpStatus(); // mostra o HP do inimigo no console
-                    if (e.verifyDeath()) { // verifica se o inimigo morreu
-                        System.out.println("inimigo morto");
-                        e.dispose(); // limpa a memória de vídeo antes de anular a variável
-                        enemies.removeIndex(j); // destroi o inimigo
+                    player.getBullets().removeIndex(i); 
+                    
+                    // dano dinamico de inimigo normal, sniper ou tanque
+                    e.takeDamage(b.getDamage()); 
+                    
+                    if (e.verifyDeath()) { 
+                        e.dispose(); 
+                        enemies.removeIndex(j); 
                         enemiesKilled++;
-                        enemyDeathSound.play(0.5f); // toca o som de morte do inimigo
-                        slotOccupied[e.getSlot()] = false; // libera a vaga do inimigo morto pra spawnar denovo
+                        enemyDeathSound.play(0.5f); 
+                        slotOccupied[e.getSlot()] = false; 
+                        
+                        // verifica se o jogador matou a quantidade necessária de inimigos para avançar de fase
+                        if (enemiesKilled >= enemiesToKillThisPhase) {
+                            advancePhase();
+                        }
                     }
                     break;
                 }
             }
         }
+        //colisão das balas dos inimigos com o player
         for (Enemy e : enemies) {   
-        for (int i = e.getBullets().size - 1; i >= 0; i--) {
-            Bullet b = e.getBullets().get(i);
-            b.update(delta);
-            
-            if (b.getHitboxBullet().overlaps(player.getHitboxPlayer())) { 
-                System.out.println("acertou player"); 
-                e.getBullets().removeIndex(i); // destroi a bala
-                player.takeDamage(60); // causa dano ao player
-                player.hpStatus(); // mostra o HP do player no console
-                if (player.verifyDeath()) { // verifica se o player morreu
-                    System.out.println("player morto");
-                    game.setScreen(new GameOverScreen(game));
-                    dispose(); // limpa a memória de vídeo antes de anular a variável
-                    return; // sai do método render para evitar tentar acessar o player depois de destruído
+            for (int i = e.getBullets().size - 1; i >= 0; i--) {
+                Bullet b = e.getBullets().get(i);
+                b.update(delta);
+                
+                if (b.getHitboxBullet().overlaps(player.getHitboxPlayer())) { 
+                    e.getBullets().removeIndex(i); 
+                    
+                    player.takeDamage(b.getDamage()); 
+                    
+                    if (player.verifyDeath()) { 
+                        game.setScreen(new GameOverScreen(game));
+                        dispose(); 
+                        return; 
+                    }
                 }
             }
         }
-        }
+        
         batch.setProjectionMatrix(camera.combined);
         shapeRenderer.setProjectionMatrix(camera.combined);
 
@@ -152,19 +202,21 @@ public class GameScreen implements Screen {
         for (Enemy e : enemies) {
             e.render(batch);
         }
+        
+        // mostra a vida e a fase atual na tela
         font.draw(batch, "HP: " + player.getHp(), 30, 35);
+        font.draw(batch, "Fase: " + currentPhase + " | Inimigos: " + enemiesKilled + "/" + enemiesToKillThisPhase, 30, 80);
 
         batch.end();
+        
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
         for (Enemy e : enemies) {
             if (!e.isSpawning()) { 
-            
-                shapeRenderer.setColor(Color.DARK_GRAY); //fundo da barra pra contraste
+                shapeRenderer.setColor(Color.DARK_GRAY); 
                 shapeRenderer.rect(e.getX(), e.getY() + 210, 200, 15);
 
                 shapeRenderer.setColor(Color.GREEN);
-                if (e.getHp() / e.getMaxHp() < 0.3f) { // se o HP estiver abaixo de 30%, pinta a barra de vermelho
+                if (e.getHp() / e.getMaxHp() < 0.3f) { 
                     shapeRenderer.setColor(Color.RED);
                 }
                 float hpPercent = e.getHp() / e.getMaxHp();
@@ -192,9 +244,7 @@ public class GameScreen implements Screen {
     }
 
     @Override public void show() {}
-    @Override public void resize(int width, int height) {
-        viewport.update(width, height, true);
-    }
+    @Override public void resize(int width, int height) { viewport.update(width, height, true); }
     @Override public void pause() {}
     @Override public void resume() {}
     @Override public void hide() {}
