@@ -26,6 +26,7 @@ public class Enemy {
     protected float maxShootInterval = 4f;
     protected Sound enemyShootSound;
     protected Sound enemyHitSound;
+    protected float rotation = 0f;
 
     private Rectangle hitboxEnemy;
     private Array<Bullet> bulletsEnemy;
@@ -103,6 +104,10 @@ public class Enemy {
         }
 
         basicMovement(delta);
+        float centerX = x + width / 2;
+        float centerY = y + height / 2;
+        Vector2 aimDirection = new Vector2(playerX - centerX, playerY - centerY).nor();
+        rotation = aimDirection.angleDeg() + 90f; // +90 porque os sprites apontam para baixo
         timeSinceLastShot += delta; 
         
         if (timeSinceLastShot >= currentShootInterval) {
@@ -123,7 +128,17 @@ public class Enemy {
             batch.setColor(1, 1, 1, alpha);
         }
 
-        batch.draw(textureEnemy, x, y, width, height);
+        batch.draw(
+            textureEnemy, 
+            x, y, 
+            width / 2f, height / 2f, // Eixo de rotação no centro
+            width, height, 
+            1f, 1f,             
+            rotation,   
+            0, 0, 
+            textureEnemy.getWidth(), textureEnemy.getHeight(), 
+            false, false  
+        );
 
         if (spawning) {
             batch.setColor(1, 1, 1, 1);

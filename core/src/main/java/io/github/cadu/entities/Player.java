@@ -14,6 +14,11 @@ public class Player {
     private Texture texturePl;
     private float x;
     private float y;
+    
+    private float targetX;
+    private float targetY;
+    private float moveSpeed = 2500f; 
+
     private int currentPlanet = 1;
     private Array<Bullet> bullets;
     private float width = 200;
@@ -33,40 +38,57 @@ public class Player {
         this.planets = planets;
         texturePl = new Texture("player.png");
         bullets = new Array<>();
-        updatePosition();
+        
+        x = planets[currentPlanet].x + 60;
+        y = planets[currentPlanet].y + 70;
+        targetX = x;
+        targetY = y;
+        
         hitboxPlayer = new Rectangle(x, y, width, height);
         shootSound = Gdx.audio.newSound(Gdx.files.internal("shoot.wav"));
         PlayerHitSound = Gdx.audio.newSound(Gdx.files.internal("hit.wav"));
     }
 
-    private void updatePosition() {
-
-        x = planets[currentPlanet].x + 60;
-        y = planets[currentPlanet].y + 70;
-
-        if  (hitboxPlayer != null) {
-            hitboxPlayer.setPosition(x, y);
-        }
+        // agora esse metodo da a posição alvo e não altera a posição do player
+    private void updateTargetPosition() {
+        targetX = planets[currentPlanet].x + 60;
+        targetY = planets[currentPlanet].y + 70;
     }
 
     public void update(float delta, float mouseX, float mouseY) {
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.S)) {
-
             if(currentPlanet > 0) {
                 currentPlanet--;
-                updatePosition();
+                updateTargetPosition();
             }
         }
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.D)) {
-
             if(currentPlanet < 2) {
                 currentPlanet++;
-                updatePosition();
+                updateTargetPosition();
             }
         }
         
+        float distX = targetX - x;
+        float distY = targetY - y;
+        float distance = (float) Math.sqrt(distX * distX + distY * distY);
+
+        // nova movementação.
+        if (distance > moveSpeed * delta) {
+            x += (distX / distance) * moveSpeed * delta;
+            y += (distY / distance) * moveSpeed * delta;
+        } else {
+            // caso passe do local
+            x = targetX;
+            y = targetY;
+        }
+
+        if (hitboxPlayer != null) {
+            hitboxPlayer.setPosition(x, y);
+        }
+
         Vector2 mousePos = new Vector2(mouseX, mouseY);
 
         Vector2 playerPos = new Vector2(
@@ -93,7 +115,7 @@ public class Player {
         } 
     }
 
-    public void render(SpriteBatch batch) { // desenha agora pra fazer a nave seguir o mouse (usei IA para ajudar)
+    public void render(SpriteBatch batch) { 
         batch.draw(
             texturePl, 
             x, y, 

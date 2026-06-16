@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.ScreenUtils;
-// NOVOS IMPORTS PARA AJUSTE DE TELA
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -19,7 +18,10 @@ public class MainMenuScreen implements Screen {
     private Main game;
     private SpriteBatch batch;
     
-    private Texture backgroundMenu;
+    private Texture[] backgroundFrames; 
+    private float stateTime;            
+    private final float FRAME_DURATION = 0.05f;
+    
     private Texture buttonStartTexture;
     private Rectangle buttonStartBounds;
     
@@ -30,9 +32,15 @@ public class MainMenuScreen implements Screen {
         this.game = game;
         batch = new SpriteBatch();
         
-        backgroundMenu = new Texture("menu_bg.png"); 
-        buttonStartTexture = new Texture("start_game.png"); 
+        backgroundFrames = new Texture[50];
         
+        for (int i = 0; i < 50; i++) {
+            backgroundFrames[i] = new Texture("menu_frames/bg" + i + ".png");
+        }
+        
+        stateTime = 0f; 
+        
+        buttonStartTexture = new Texture("start_game.png"); 
         buttonStartBounds = new Rectangle(440, 400, 400, 160); 
         
         camera = new OrthographicCamera();
@@ -42,6 +50,18 @@ public class MainMenuScreen implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0, 1);
+        stateTime += delta; 
+
+        int cycleLength = (50 * 2) - 2;
+        int currentTick = (int) (stateTime / FRAME_DURATION) % cycleLength;
+
+        int currentFrameIndex;
+        if (currentTick < 50) {
+            currentFrameIndex = currentTick;
+        } else {
+            currentFrameIndex = cycleLength - currentTick; 
+        }
+
         Vector3 mouseMundo = viewport.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
@@ -55,7 +75,7 @@ public class MainMenuScreen implements Screen {
         batch.setProjectionMatrix(camera.combined);
         
         batch.begin();
-        batch.draw(backgroundMenu, 0, 0, 1280, 960); 
+        batch.draw(backgroundFrames[currentFrameIndex], 0, 0, 1280, 960); 
         batch.draw(buttonStartTexture, buttonStartBounds.x, buttonStartBounds.y, buttonStartBounds.width, buttonStartBounds.height);
         batch.end();
     }
@@ -68,7 +88,15 @@ public class MainMenuScreen implements Screen {
     @Override
     public void dispose() {
         batch.dispose();
-        backgroundMenu.dispose();
+        
+        if (backgroundFrames != null) {
+            for (int i = 0; i < 50; i++) {
+                if (backgroundFrames[i] != null) {
+                    backgroundFrames[i].dispose();
+                }
+            }
+        }
+        
         buttonStartTexture.dispose();
     }
 
