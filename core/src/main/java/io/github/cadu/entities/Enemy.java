@@ -27,6 +27,7 @@ public class Enemy {
     protected Sound enemyShootSound;
     protected Sound enemyHitSound;
     protected float rotation = 0f;
+    protected int coinReward;
 
     private Rectangle hitboxEnemy;
     private Array<Bullet> bulletsEnemy;
@@ -50,6 +51,7 @@ public class Enemy {
         this.minBound = minBound;
         this.maxBound = maxBound;
         this.slot = slot;
+        this.coinReward = currentPhase; // o inimigo recompensa moedas de acordo com a fase atual 
 
         this.hp = 250;
         this.maxHp = 250;
@@ -195,6 +197,10 @@ public class Enemy {
 
     public boolean isSpawning() {
         return spawning;
+    }
+    
+    public int getCoinReward() {
+        return coinReward;
     }
 
     // Getters para pos e hp para fazer a render da barra de vida do inimigo

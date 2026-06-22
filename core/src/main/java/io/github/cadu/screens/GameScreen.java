@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.Preferences;
 
 import io.github.cadu.entities.Player;
 import io.github.cadu.entities.Planet;
@@ -152,6 +153,7 @@ public class GameScreen implements Screen {
                     e.takeDamage(b.getDamage()); 
                     
                     if (e.verifyDeath()) { 
+                        player.addCoins(e.getCoinReward());
                         e.dispose(); 
                         enemies.removeIndex(j); 
                         enemiesKilled++;
@@ -179,6 +181,9 @@ public class GameScreen implements Screen {
                     player.takeDamage(b.getDamage()); 
                     
                     if (player.verifyDeath()) { 
+                        Preferences prefs = Gdx.app.getPreferences("save");
+                        prefs.putInteger("moedasTotais", player.getCoins());
+                        prefs.flush(); // usa preferences pra guardar as moedas mesmo apos morrer
                         game.setScreen(new GameOverScreen(game));
                         dispose(); 
                         return; 
@@ -206,6 +211,7 @@ public class GameScreen implements Screen {
         // mostra a vida e a fase atual na tela
         font.draw(batch, "HP: " + player.getHp(), 30, 35);
         font.draw(batch, "Fase: " + currentPhase + " | Inimigos: " + enemiesKilled + "/" + enemiesToKillThisPhase, 30, 80);
+        font.draw(batch, "Moedas: " + player.getCoins(), 30, 125);
 
         batch.end();
         

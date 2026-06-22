@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.Preferences; // usa pra guardar as moedas
 
 public class Player {
 
@@ -17,25 +18,57 @@ public class Player {
     
     private float targetX;
     private float targetY;
-    private float moveSpeed = 2500f; 
-
+    
     private int currentPlanet = 1;
     private Array<Bullet> bullets;
     private float width = 200;
     private float height = 200;
-    private float hp = 300;
     private Rectangle hitboxPlayer;
     private float rotation = 0f;
     private Sound shootSound;
     private Sound PlayerHitSound;
-    private float baseDamage = 50f;
-    private float fireRate = 1.0f;
+
+    private float hp;
+    private float maxHp;
+    private float baseDamage;
+    private float moveSpeed; 
+    private int coins = 0;
+    
+    private float fireRate;
+    private float timeSinceLastShot = 0f; 
+    
+    private int lvlRegen;
+    private float regenTimer = 0f; 
 
     private Planet[] planets;
 
     public Player(Planet[] planets) {
-
         this.planets = planets;
+        
+        Preferences prefs = Gdx.app.getPreferences("save");
+        this.coins = prefs.getInteger("moedasTotais", 0);
+        
+        // pega os niveis comprados na loja
+        int lvlHp = prefs.getInteger("lvl_hp", 0);
+        int lvlDmg = prefs.getInteger("lvl_dmg", 0);
+        int lvlAtkSpeed = prefs.getInteger("lvl_atk_speed", 0);
+        int lvlShipSpeed = prefs.getInteger("lvl_ship_speed", 0);
+        this.lvlRegen = prefs.getInteger("lvl_regen", 0);
+
+        // aplica os calculos dos upgrades
+        // vida maxima começa com 300 e ganha 50 por nivel
+        this.maxHp = 300f + (lvlHp * 50f);
+        this.hp = this.maxHp; 
+        
+        // dano comeca com 50 e ganha 15 por nivel
+        this.baseDamage = 50f + (lvlDmg * 15f);
+        
+        // velocidade comeca em 2500 e ganha 300 por nivel
+        this.moveSpeed = 2500f + (lvlShipSpeed * 300f);
+        
+        // tempo de espera do tiro diminui 0.05s por nivel
+        this.fireRate = 0.4f - (lvlAtkSpeed * 0.05f);
+
         texturePl = new Texture("player.png");
         bullets = new Array<>();
         
@@ -49,13 +82,28 @@ public class Player {
         PlayerHitSound = Gdx.audio.newSound(Gdx.files.internal("hit.wav"));
     }
 
-        // agora esse metodo da a posição alvo e não altera a posição do player
+    // agora esse metodo da a posição alvo e não altera a posição do player
     private void updateTargetPosition() {
         targetX = planets[currentPlanet].x + 60;
         targetY = planets[currentPlanet].y + 70;
     }
 
     public void update(float delta, float mouseX, float mouseY) {
+
+        // logica de regeneracao de vida
+        // so tenta curar se tiver upgrade e a vida nao estiver cheia
+        if (lvlRegen > 0 && hp < maxHp) {
+            regenTimer += delta; 
+            
+            if (regenTimer >= 1.0f) { 
+                hp += (lvlRegen * 3); // cura 3 de hp por nivel a cada segundo
+                
+                if (hp > maxHp) { 
+                    hp = maxHp; 
+                }
+                regenTimer = 0f; 
+            }
+        }
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.S)) {
             if(currentPlanet > 0) {
@@ -90,17 +138,15 @@ public class Player {
         }
 
         Vector2 mousePos = new Vector2(mouseX, mouseY);
-
-        Vector2 playerPos = new Vector2(
-            x + width / 2,
-            y + height / 2
-        );
-
+        Vector2 playerPos = new Vector2(x + width / 2, y + height / 2);
         Vector2 aimDirection = mousePos.sub(playerPos).nor();
         
         rotation = aimDirection.angleDeg() - 90f;
 
-        if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+        timeSinceLastShot += delta; 
+
+        // isbuttonpressed pra segurar o clique e firerate pra limitar a velocidade
+        if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && timeSinceLastShot >= fireRate) {
             shootSound.play(0.5f);
             
             float offset = height / 2; 
@@ -108,6 +154,9 @@ public class Player {
             float spawnY = playerPos.y + (aimDirection.y * offset);
             
             bullets.add(new Bullet(spawnX, spawnY, new Vector2(aimDirection), baseDamage));
+            
+            // reseta o tempo do tiro
+            timeSinceLastShot = 0f; 
         }
         
         for(Bullet bullet : bullets) {
@@ -170,5 +219,13 @@ public class Player {
 
     public float getY() {
         return y;
+    }
+
+    public void addCoins(int amount) {
+        this.coins += amount;
+    }
+
+    public int getCoins() {
+        return coins;
     }
 }

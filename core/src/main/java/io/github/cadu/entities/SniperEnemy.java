@@ -21,6 +21,7 @@ public class SniperEnemy extends Enemy {
         this.damage = 100; 
         this.movSpeed = 50; 
         this.maxHp = 150;
+        this.coinReward = currentPhase + 2; // especiais dao mais moedas
     }
 
     @Override

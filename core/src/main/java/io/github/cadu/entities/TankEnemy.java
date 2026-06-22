@@ -22,6 +22,7 @@ public class TankEnemy extends Enemy {
         this.maxHp = 800;
         this.movSpeed = 30;
         this.damage = 20;
+        this.coinReward = currentPhase + 2; // especiais dao mais moedas
     }
     
     @Override
