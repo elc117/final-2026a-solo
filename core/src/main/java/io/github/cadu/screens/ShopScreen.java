@@ -8,8 +8,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -34,8 +32,9 @@ public class ShopScreen implements Screen {
     private Rectangle buttonBackBounds;
     
     private BitmapFont fontMoedas;
-    private BitmapFont fontPreco;
     private GlyphLayout glyphLayout;
+
+    private Texture texPreco15, texPreco20, texPreco25, texPreco30, texPreco35, texPrecoMax;
 
     private Sound buySound;
     private Sound errorSound;
@@ -57,29 +56,15 @@ public class ShopScreen implements Screen {
         viewport = new FitViewport(1280, 960, camera);
         glyphLayout = new GlyphLayout();
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("jungle.ttf"));
-        FreeTypeFontParameter parameter = new FreeTypeFontParameter();
-        
-        parameter.minFilter = Texture.TextureFilter.Nearest;
-        parameter.magFilter = Texture.TextureFilter.Nearest;
-        parameter.color = Color.WHITE;
-        
-        parameter.size = 38; 
-        parameter.borderWidth = 2;
-        parameter.borderColor = Color.BLACK;
-        parameter.shadowOffsetX = 3; 
-        parameter.shadowOffsetY = 3;
-        parameter.shadowColor = new Color(0, 0, 0, 0.7f); 
-        fontMoedas = generator.generateFont(parameter);
-        
+        fontMoedas = new BitmapFont();
+        fontMoedas.getData().setScale(2.5f); 
 
-        parameter.size = 24; 
-        parameter.borderWidth = 2; 
-        parameter.shadowOffsetX = 2; 
-        parameter.shadowOffsetY = 2;
-        fontPreco = generator.generateFont(parameter);
-        
-        generator.dispose(); 
+        texPreco15 = new Texture("preco_15.png");
+        texPreco20 = new Texture("preco_20.png");
+        texPreco25 = new Texture("preco_25.png");
+        texPreco30 = new Texture("preco_30.png");
+        texPreco35 = new Texture("preco_35.png");
+        texPrecoMax = new Texture("preco_max.png");
 
         buySound = Gdx.audio.newSound(Gdx.files.internal("buy.wav"));
         errorSound = Gdx.audio.newSound(Gdx.files.internal("error.wav"));
@@ -121,7 +106,7 @@ public class ShopScreen implements Screen {
             for (int i = 0; i < 6; i++) {
                 if (buyBounds[i].contains(mouseMundo.x, mouseMundo.y)) {
 
-                    int precoAtual = 15 + (upgradeLevels[i] * 5); // aumenta o preço dos upgrades por 5 a cada nivel 
+                    int precoAtual = 15 + (upgradeLevels[i] * 5); 
 
                     if (currentCoins >= precoAtual && upgradeLevels[i] < MAX_LEVEL) {
                         currentCoins -= precoAtual;
@@ -151,12 +136,19 @@ public class ShopScreen implements Screen {
         float coinY = 910f + (glyphLayout.height / 2f); 
         fontMoedas.draw(batch, glyphLayout, coinX, coinY);
 
+        float targetWidth = 40f; 
+        float targetHeight = 34f; 
 
         for (int i = 0; i < 6; i++) {
-            int precoAtual = 15 + (upgradeLevels[i] * 5);
-            String textCusto = (upgradeLevels[i] >= MAX_LEVEL) ? "MAX" : (precoAtual + " M");
-            
-            glyphLayout.setText(fontPreco, textCusto);
+            int level = upgradeLevels[i];
+            Texture textureToDraw;
+
+            if (level == 0) textureToDraw = texPreco15;
+            else if (level == 1) textureToDraw = texPreco20;
+            else if (level == 2) textureToDraw = texPreco25;
+            else if (level == 3) textureToDraw = texPreco30;
+            else if (level == 4) textureToDraw = texPreco35;
+            else textureToDraw = texPrecoMax; 
             
             float startX = (i % 2 == 0) ? 235.5f : (235.5f + 467f);
             float startY;
@@ -165,17 +157,15 @@ public class ShopScreen implements Screen {
             else startY = 64.5f;
 
             float precoX = startX + (4 * 48f) + 35f + 15f; 
-            float precoY = startY + 17.5f + (glyphLayout.height / 2f); 
+            float precoY = (startY + 17.5f) - (targetHeight / 2f); 
             
-            fontPreco.draw(batch, glyphLayout, precoX, precoY);
+            batch.draw(textureToDraw, precoX, precoY, targetWidth, targetHeight);
         }
 
         batch.end();
 
-
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        // aqui desenha os quadrados dos upgrades (esses numeros quebrados é pra ficar bem certinho nos pixeis)
         for (int i = 0; i < 6; i++) {
             float startX = (i % 2 == 0) ? 235.5f : (235.5f + 467f); 
             float startY;
@@ -211,7 +201,14 @@ public class ShopScreen implements Screen {
         backgroundShop.dispose();
         buttonBackTexture.dispose();
         fontMoedas.dispose(); 
-        fontPreco.dispose();
+        
+        texPreco15.dispose();
+        texPreco20.dispose();
+        texPreco25.dispose();
+        texPreco30.dispose();
+        texPreco35.dispose();
+        texPrecoMax.dispose();
+
         buySound.dispose(); 
         errorSound.dispose();
     }

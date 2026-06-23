@@ -106,6 +106,11 @@ public class GameScreen implements Screen {
 
     private void advancePhase() {
         currentPhase++;
+            if (currentPhase == 6) {
+            game.setScreen(new VictoryScreen(game));
+            dispose();
+            return;
+        }
         enemiesKilled = 0;
         enemiesSpawnedThisPhase = 0;
         enemiesToKillThisPhase += 2; // aumenta a quantidade de inimigos a matar a cada fase para aumentar a dificuldade
@@ -163,6 +168,7 @@ public class GameScreen implements Screen {
                         // verifica se o jogador matou a quantidade necessária de inimigos para avançar de fase
                         if (enemiesKilled >= enemiesToKillThisPhase) {
                             advancePhase();
+                            if (currentPhase == 6) return;
                         }
                     }
                     break;
@@ -209,7 +215,7 @@ public class GameScreen implements Screen {
         }
         
         // mostra a vida e a fase atual na tela
-        font.draw(batch, "HP: " + player.getHp(), 30, 35);
+        font.draw(batch, "HP: " + (int) player.getHp(), 30, 35);
         font.draw(batch, "Fase: " + currentPhase + " | Inimigos: " + enemiesKilled + "/" + enemiesToKillThisPhase, 30, 80);
         font.draw(batch, "Moedas: " + player.getCoins(), 30, 125);
 
