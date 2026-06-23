@@ -1,3 +1,8 @@
+# Trabalho FINAL de Paradigmas de Programação
+## Aluno: Carlos Eduardo Silva de Oliveira
+## Planet Protector
+
+- Dia 1
 Vou começar a colocar o que mudei no código aqui neste README, como um diário segundo indicação da professora.
 Comecei o trabalho no dia 27/05, onde criei o projeto vazio do LibGDX, e alterei apenas a tela do jogo para 1280x960.
 No dia 28/05 foi onde fiz as maiores mudanças e avanços até então no código, fiz 8 commits, nesse dia adicionei:
@@ -8,26 +13,31 @@ Iniciarei a fazer mais commits brevemente e agora quero adicionar as hitboxes pa
 
 *Essa versão do README está muito básica e nada profissional, porém será alterada também no futuro, apenas documentando o que foi feito por enquanto.
 
+- Dia 2
 06/06
 
 Primeiro commit do dia: Adicionei o math.Rectangle do libGDX para fazer as hitboxes dos inimigos e das balas, foi feita também um sistema para testar se a colisão entre bala e inimigo está funcionando na GameScreen. Eu testei e está funcionando, agora irei adicionar uma forma de derrotar o inimigo. Comecei a colocar comentários no código para melhorar a legibilidade. Vou melhorar também o que está escrito nos commits, para ficar de acordo com algo mais profissional.
 
 Segundo commit do dia: Agora com as hitboxes funcionando foquei em implementar o sistema primitivo de eliminar um inimigo, essa parte foi a que mais me trouxe problemas e precisei recorrer diversas vezes à IA, na teoria era apenas implementar a função de takeDamage para os inimigos quando a colisão for detectada e verificar seu HP para remove-los quando chegar a 0. No entanto os meus problemas nao vieram dessa parte, fiz as funções relativamente rápido (tive problemas com 1 bala contando mais de uma vez na hora do dano), porém na hora de remover os inimigos surgiram muitos problemas, eu estava colocando os inimigos como nulo antes de dar dispose (crashava o jogo), eu não estava usando a verificação de enemy != null, e o GameScreen tentava trabalhar com um inimigo nulo, que resultava em crashes também, resolvi pedir ajuda para a IA, o método que resolveu foi adicionar uma etapa de verificação antes de funções que envolviam os inimigos (não sei se esse é o melhor método, porém vou prosseguir no momento e se precisar, será alterado no futuro). Agora é possivel derrotar o inimigo que tem no jogo, ele tem um HpTest de 200 e toma 50 de dano a cada bala.
 
+- Dia 3
 08/06
 
 Primeiro commit do dia: Implementei uma versão bem básica de um menu inicial, que será muito mais importante no futuro, é onde serão feitas as compras dos upgrades para o personagem dando a vida do roguelite. O menu por enquanto so tem um background estatico e um botão de start game que altera para a screen da gameplay. Reutilizei a logica da hitbox com o rectangle e override para o botão de start.
 
+- Dia 4
 11/06
 
 Reutilizei código do MainMenu para fazer uma Game Over screen, utilizei a hitbox que tinha colocado no ultimo commit para o player tomar dano e morrer agora, se o hp chegar a 0 abre a game over screen, onde voce pode voltar para o menu principal e jogar de novo. A gameplay central está tomando forma e agora com alguns commits adicionando mais inimigos, sistema de fases e os upgrades a primeira versão chegará.
 
+- Dia 4
 12/06
 
 Hoje vou fazer muitos commits, o primeiro do dia implementa: O jogo só tinha 1 inimigo na tela, agora coloquei o inimigo como um array, para poder renderizar mais de um ao mesmo tempo na tela como fiz com bullets, agora então ajustei a gameplay para ter 3 inimigos ao mesmo tempo, agora com esses 3 inimigos coloquei também uma nova movimentação, o inimigo da direita e da esquerda se movem horizontalmente e fiz com que o do meio va pra cima e pra baixo, coloquei algumas alterações na velocidade de disparo e intervalo de tempo para balancear mais a gameplay. Vou implementar muito mais coisas hoje e quero até o final do dia ter uma ou mais fases prontas e talvez o sistema de upgrades.
 
 Segundo commit: Adicionei muitas coisas, porém a principal é que agora o sistema de spawnar 3 inimigos não é mais hardcoded, adicionei um sistema de lanes usando slots como é feito no jogo Plants vs Zombies, onde usa um array para verificar se pode ou não spawnar um inimigo no slot que ele estava, agora só pode ter um inimigo por slot e eles respawnam em seu lugar correto. Adicionei também uma barra de hp para os inimigos que fica vermelha quando eles atingem 30% do hp e algumas mudanças graficas como um fade in para o spawn dos inimigos, onde eles nao podem receber dano durante .4 segundos. Meu próximo commit será focado em algumas mudanças básicas pra dar um visual de jogo melhor como sound effects, algumas animações basicas mas nada muito excessivo pois ainda falta muita logica de jogo, porém quero que pelo menos ele ja tenha uma estética bonitinha para continuar o resto.
 
+- Dia 5
 13/06
 
 Primeiro commit: Usei a IA pra ajudar com alguns elementos de animação, Gemini me ajudou a fazer a parte da nave do player rotacionar virada para o mouse sempre, envolvia uma matemática que eu não entendi direito, por isso fui atrás da ajuda da IA, como é algo puramente pra visual e não muda a lógica do jogo, acho justo o uso da IA. Adicionei também sound effects para tiros, hits e morte. Percebi que meu projeto não estava com a opção de html que precisava pra funcionar no itch.io, então arrumei criando um novo projeto e trazendo os códigos pra cá. Agora consigo criar a build html.
@@ -36,15 +46,18 @@ Terceiro commit: Preparando novas classes para inimigos novos, para que eu possa
 Quarto commit: Maior commit do dia e mais importante, dei uma arrumada nas novas classes dos personagens especiais, coloquei danos diferentes, velocidades de tiros, arrumei hitboxes. Troquei a hitbox da bullet pra ser mais precisa, arrumei alguns bugs como os inimigos atirando com a mira no cantinho do player fazendo eles errarem as vezes. A principal mudança foi no GameScreen, onde implementei o sistema de fases e alterei a forma como os inimigos spawnam, agora tem um currentPhase que vê em qual fase o player está, se ele está na fase 1, apenas nascem inimigos normais nos slots que estão disponiveis, se está na fase 2 ou em diante, nascem inimigos especiais (sniper ou tanque) alternadamente com os normais, quando morre um normal, nasce um especial no lugar, quando morre esse especial, nasce um normal. Usei esse sistema do currentPhase também para aumentar a dificuldade com o passar das fases, o inimigo normal aumenta o dano e seu hp cada fase que passa.
 Quinto commit: Testei no itch.io e a full screen estava bugada, então fiz algumas correções com a ajuda da IA.
 
+- Dia 6
 15/06:
 
 Primeiro commit: Eu deixei o fundo do main menu um pouco mais bonito com um video que eu fiz e transformei em imagens, com isso eu adicionei também mais umas implementações visuais, alterei a sprite do inimigo default, e reutilizei o código de rotação do Player para fazer os inimigos seguirem com rotação o Player. Outra implementação importante foi que refatorei uma parte do código de movimentação, agora o player tem um speed e não teleporta instantaneamente para os outros planetas, ele agora se move de maneira mais suave e poderá ser um futuro upgrade (proximo commit será a loja).
 
+- Dia 7
 21/06
 
 Primeiro commit: Hoje fiz o maior commit do trabalho. Passei 7 horas trabalhando nesse commit mas valeu a pena. Eu comecei adicionando uma nova screen chamada ShopScreen, onde eu coloquei a função principal do jogo, onde o player consegue melhorar seu personagem em um loja, para isso funcionar também implementei um novo sistema de moedas, funciona bem simples, quando um inimigo morre, dependendo da fase, o jogador recebe uma quantia de moedas, que poderão ser gastas nessa loja. Passei bastante tempo, pois tive que fazer assets, calcular onde colocaria as hitboxes, balanceamento e outras coisas. Foi bem chatinho fazer esses calculos, provavelmente não implementei da maneira mais otimizada, pois acredito que colocar arrays com pixeis hard-codeds não sejam a melhor opção, porém era como eu sabia fazer. A parte gráfica e alguns cálculos eu utilizei bastante IA para me ajudar, em especifico o Gemini e o ChatGPT. Com a loja e as moedas funcionando eu implementei as mudanças no Player, essa parte foi bem tranquila, calculos bem simples e nenhuma operação muito complicada, vale ressaltar que precisei alterar partes importantes do código, como no código de tiro do Player, agora adicionei FireRate e a gameplay mudou, agora pode segurar o botão de tiro invés de clicar individualmente para cada bala.
 Mudanças também foram feitas na parte gráfica do trabalho, no menu inicial ajustei os botões, arrumei hitboxes erradas e adicionei um titulo para o jogo. Essas mudanças estéticas eu fiz bem Vibe Coded, poderia ter feito a mão, porém eu sinto que apenas perderia tempo e como não faz parte da lógica de jogo e estamos perto do dia da entrega preferi usar IA para melhoras estéticas.
 
+- Dia 8
 23/06
 
 Ultimo commit: Resolvi o que faltava para terminar a entrega do trabalho, alterei o hp da tela do player pra (int), adicionei uma tela de vitória e uma tela de historia. Queria ter colocado uma boss fight no jogo porém nao consegui a tempo, meu tempo ficou muito corrido por conta das outras disciplinas que acabaram dificultando bastante.
